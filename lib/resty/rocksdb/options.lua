@@ -1,9 +1,9 @@
 local ffi = require('ffi')
 local ctype = require('ctype')
 local rocksdb = ffi.load('rocksdb')
-local include_rocksdb = require('include_rocksdb')
+local include_rocksdb = require('include_cdef')
 
-local _M = { _VERSION = '1.0' }
+local _M = {}
 
 function _M.rocksdb_options_create()
     return rocksdb.rocksdb_options_create()

@@ -1,14 +1,14 @@
 local ffi = require('ffi')
 local rocksdb = ffi.load('rocksdb')
 
-local include_rocksdb = require('include_rocksdb')
+local include_rocksdb = require('include_cdef')
 local ctype = require('ctype')
 
 local _M = { _VERSION = '1.0' }
 
 function _M.ret_db_and_parse_err(db, err)
     if err[0] ~= nil then
-        return nil, 'CreateDbErr',error(ffi.string(err[0]))
+        return nil, 'CreateDbErr', ffi.string(err[0])
     end
     return db, nil, nil
 end
