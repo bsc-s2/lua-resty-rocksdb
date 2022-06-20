@@ -508,6 +508,10 @@ function _M.rocksdb_writeoptions_set_low_pri(write_opt, bool)
     return rocksdb.rocksdb_writeoptions_set_low_pri(write_opt, bool)
 end
 
+function _M.rocksdb_readoptions_create()
+    return rocksdb.rocksdb_readoptions_create()
+end
+
 local OPT_FUN_LIST = {
     ['increase_parallelism'] = _M.rocksdb_options_increase_parallelism,
     ['optimize_level_style_compaction'] = _M.rocksdb_options_optimize_level_style_compaction,
