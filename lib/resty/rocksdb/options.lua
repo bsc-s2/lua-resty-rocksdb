@@ -471,10 +471,20 @@ function _M.rocksdb_options_set_row_cache(opts, rocksdb_cache_t)
     return rocksdb.rocksdb_options_set_row_cache(opts, rocksdb_cache_t)
 end
 
+function _M.rocksdb_get_options_from_string(base_opt, opt_str, new_opt)
+    local err = ffi.new(ctype.char_t_p_p)
+    rocksdb.rocksdb_get_options_from_string(base_opt, opt_str, new_opt, err)
+    if err[0] ~= nil then
+        return nil, 'GetOptionErr', ffi.string(err[0])
+    end
+    return nil, nil, nil
+end
+
 local OPT_FUN_LIST = {
     ['increase_parallelism'] = _M.rocksdb_options_increase_parallelism,
     ['optimize_level_style_compaction'] = _M.rocksdb_options_optimize_level_style_compaction,
-    ['options_set_create_if_missing'] = _M.rocksdb_options_set_create_if_missing,
+    ['create_if_missing'] = _M.rocksdb_options_set_create_if_missing,
+    ['target_file_size_base'] = _M.rocksdb_options_set_target_file_size_base,
     ['optimize_for_point_lookup'] = _M.rocksdb_options_optimize_for_point_lookup,
     ['optimize_universal_style_compaction'] = _M.rocksdb_options_optimize_universal_style_compaction,
     ['allow_ingest_behind'] = _M.rocksdb_options_set_allow_ingest_behind,
@@ -499,8 +509,8 @@ local OPT_FUN_LIST = {
     ['max_file_opening_threads'] = _M.rocksdb_options_set_max_file_opening_threads,
     ['max_total_wal_size'] = _M.rocksdb_options_set_max_total_wal_size,
     ['compression_options'] = _M.rocksdb_options_set_compression_options,
-    ['set_prefix_extractor'] = _M.rocksdb_options_set_prefix_extractor,
-    ['set_num_levels'] = _M.rocksdb_options_set_num_levels,
+    ['prefix_extractor'] = _M.rocksdb_options_set_prefix_extractor,
+    ['num_levels'] = _M.rocksdb_options_set_num_levels,
     ['level0_file_num_compaction_trigger'] = _M.rocksdb_options_set_level0_file_num_compaction_trigger,
     ['level0_slowdown_writes_trigger'] = _M.rocksdb_options_set_level0_slowdown_writes_trigger,
     ['level0_stop_writes_trigger'] = _M.rocksdb_options_set_level0_stop_writes_trigger,
@@ -573,7 +583,7 @@ local OPT_FUN_LIST = {
     ['min_level_to_compress'] = _M.rocksdb_options_set_min_level_to_compress,
     ['memtable_huge_page_size'] = _M.rocksdb_options_set_memtable_huge_page_size,
     ['max_successive_merges'] = _M.rocksdb_options_set_max_successive_merges,
-    ['set_bloom_locality'] = _M.rocksdb_options_set_bloom_locality,
+    ['bloom_locality'] = _M.rocksdb_options_set_bloom_locality,
     ['inplace_update_support'] = _M.rocksdb_options_set_inplace_update_support,
     ['inplace_update_num_locks'] = _M.rocksdb_options_set_inplace_update_num_locks,
     ['report_bg_io_stats'] = _M.rocksdb_options_set_report_bg_io_stats,
@@ -592,9 +602,9 @@ local OPT_FUN_LIST = {
 --    ["opt_fun_name3"] = {"args1", "args2"},
 --}
 
-function _M.set_option(options_table)
+function _M.set_option(opt, options_table)
     for opt_fun, args in pairs(options_table) do
-        OPT_FUN_LIST[opt_fun](unpack(args))
+        OPT_FUN_LIST[opt_fun](opt, unpack(args))
     end
 end
 

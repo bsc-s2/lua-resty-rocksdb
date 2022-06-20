@@ -1,0 +1,16 @@
+tags
+*.pyc
+*~
+.xptsnip.vim
+*.db
+binlog_pos
+*.o
+*.so
+conf.d/
+sub/.gitmodules
+
+.vscode/
+.gitsubrepo_refs
+*.code-workspace
+
+/.idea
