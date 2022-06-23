@@ -6,42 +6,126 @@ local ctype = require('ctype')
 
 local _M = { _VERSION = '1.0' }
 
-function _M.ret_db_and_parse_err(db, err)
-    if err[0] ~= nil then
-        return nil, 'CreateDbErr', ffi.string(err[0])
+local db_types = {
+    ['normal'] = "NORMAL",
+    ['ttl'] = "TTL",
+    ['read_only'] = "READONLY",
+    ['secondary'] = "SECONDARY",
+}
+
+local db = nil
+local db_type = nil
+
+local function check_open_db_type(type)
+    if db_type ~= nil and db_type ~= type then
+        return nil , 'OpenDbError', "The DB type: ".. type ..
+                " to be opened conflicts with an existing type:" .. db_type
     end
-    return db, nil, nil
+
+    return nil, nil, nil
 end
 
 function _M.open_db(opts, db_path)
-    local err = ffi.new(ctype.char_t_p_p)
+    local _, err_code, err_msg = check_open_db_type(db_types['normal'])
+    if err_code ~= nil then
+        return nil, err_code, err_msg
+    end
 
-    local db = rocksdb.rocksdb_open(opts, db_path, err)
-    return _M.ret_db_and_parse_err(db, err)
+    if db ~= nil then
+        return db, nil, nil
+    end
+
+    local err = ffi.new(ctype.str_array_t, 1)
+    db = rocksdb.rocksdb_open(opts, db_path, err)
+
+    if err[0] ~= nil then
+        return nil, 'OpenDbError', ffi.string(err[0])
+    end
+
+    db_type = db_types['normal']
+
+    return db, nil, nil
+
 end
 
-function _M.rocksdb_open_with_ttl(opts, db_path, ttl)
-    local err = ffi.new(ctype.char_t_p_p)
+function _M.destroy_db(opt, db_name)
+    local err = ffi.new(ctype.str_array_t, 1)
+    rocksdb.rocksdb_destroy_db(opt, db_name, err)
+    if err[0] ~= nil then
+        return nil, 'DestroyDbError', ffi.string(err[0])
+    end
 
-    local db = rocksdb.rocksdb_open_with_ttl(opts, db_path, ffi.new(ctype.int_t, ttl), err)
-
-    return _M.ret_db_and_parse_err(db, err)
+    return nil, nil, nil
 end
 
-function _M.rocksdb_open_for_read_only(opts, db_path, error_if_log_file_exist)
-    local err = ffi.new(ctype.char_t_p_p)
+function _M.open_with_ttl(opts, db_path, ttl)
+    local _, err_code, err_msg = check_open_db_type(db_types['ttl'])
+    if err_code ~= nil then
+        return nil, err_code, err_msg
+    end
 
-    local db = rocksdb.rocksdb_open_for_read_only(opts, db_path, error_if_log_file_exist, err)
+    if db ~= nil then
+        return db, nil, nil
+    end
 
-    return _M.ret_db_and_parse_err(db, err)
+    local err = ffi.new(ctype.str_array_t, 1)
+
+    db = rocksdb.rocksdb_open_with_ttl(opts, db_path, ffi.new(ctype.int_t, ttl), err)
+
+    if err[0] ~= nil then
+        return nil, 'OpenDbError', ffi.string(err[0])
+    end
+
+    db_type = db_types['ttl']
+
+    return db, nil, nil
 end
 
-function _M.rocksdb_open_as_secondary(opts, db_path, secondary_path)
-    local err = ffi.new(ctype.char_t_p_p)
+function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
+    local _, err_code, err_msg = check_open_db_type(db_types['read_only'])
+    if err_code ~= nil then
+        return nil, err_code, err_msg
+    end
 
-    local db = rocksdb.rocksdb_open_as_secondary(opts, db_path, secondary_path, err)
+    if db ~= nil then
+        return db, nil, nil
+    end
 
-    return _M.ret_db_and_parse_err(db, err)
+
+    local err = ffi.new(ctype.str_array_t, 1)
+
+    db = rocksdb.rocksdb_open_for_read_only(opts, db_path, error_if_log_file_exist, err)
+
+    if err[0] ~= nil then
+        return nil, 'OpenDbError', ffi.string(err[0])
+    end
+
+    db_type = db_types['read_only']
+
+    return db, nil, nil
+end
+
+function _M.open_as_secondary(opts, db_path, secondary_path)
+    local _, err_code, err_msg = check_open_db_type(db_types['secondary'])
+    if err_code ~= nil then
+        return nil, err_code, err_msg
+    end
+
+    if db ~= nil then
+        return db, nil, nil
+    end
+
+    local err = ffi.new(ctype.str_array_t, 1)
+
+    db = rocksdb.rocksdb_open_as_secondary(opts, db_path, secondary_path, err)
+
+    if err[0] ~= nil then
+        return nil, 'OpenDbError', ffi.string(err[0])
+    end
+
+    db_type = db_types['secondary']
+
+    return db, nil, nil
 end
 
 return _M

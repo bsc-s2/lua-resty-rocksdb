@@ -65,7 +65,7 @@ end
 
 function _M.rocksdb_options_set_compression_per_level(opts, level_values, num_levels)
     return rocksdb.rocksdb_options_set_compression_per_level(opts,
-            ffi.new(ctype.int_t_p, level_values), ffi.new(ctype.size_t, num_levels))
+            ffi.new(ctype.int_p_t, level_values), ffi.new(ctype.size_t, num_levels))
 end
 
 function _M.rocksdb_options_set_create_missing_column_families(opts, bool)
@@ -167,7 +167,7 @@ end
 
 function _M.rocksdb_options_set_max_bytes_for_level_multiplier_additional(opts, level_values, num_levels)
     return rocksdb.rocksdb_options_set_max_bytes_for_level_multiplier_additional(opts,
-            ffi.new(ctype.int_t_p, level_values), ffi.new(ctype.size_t, num_levels))
+            ffi.new(ctype.int_p_t, level_values), ffi.new(ctype.size_t, num_levels))
 end
 
 function _M.rocksdb_options_enable_statistics(opts)
@@ -472,12 +472,40 @@ function _M.rocksdb_options_set_row_cache(opts, rocksdb_cache_t)
 end
 
 function _M.rocksdb_get_options_from_string(base_opt, opt_str, new_opt)
-    local err = ffi.new(ctype.char_t_p_p)
+    local err = ffi.new(ctype.str_array_t, 1)
     rocksdb.rocksdb_get_options_from_string(base_opt, opt_str, new_opt, err)
     if err[0] ~= nil then
         return nil, 'GetOptionErr', ffi.string(err[0])
     end
     return nil, nil, nil
+end
+
+function _M.rocksdb_writeoptions_create()
+    return rocksdb.rocksdb_writeoptions_create()
+end
+
+function _M.rocksdb_writeoptions_destroy(write_opt)
+    return rocksdb.rocksdb_writeoptions_destroy(write_opt)
+end
+
+function _M.rocksdb_writeoptions_set_sync(write_opt, bool)
+    return rocksdb.rocksdb_writeoptions_set_sync(write_opt, bool)
+end
+
+function _M.rocksdb_writeoptions_disable_WAL(write_opt, disable)
+    return rocksdb.rocksdb_writeoptions_disable_WAL(write_opt, ffi.new(ctype.int_t, disable))
+end
+
+function _M.rocksdb_writeoptions_set_ignore_missing_column_families(write_opt, bool)
+    return rocksdb.rocksdb_writeoptions_set_ignore_missing_column_families(write_opt, bool)
+end
+
+function _M.rocksdb_writeoptions_set_no_slowdown(write_opt, bool)
+    return rocksdb.rocksdb_writeoptions_set_no_slowdown(write_opt, bool)
+end
+
+function _M.rocksdb_writeoptions_set_low_pri(write_opt, bool)
+    return rocksdb.rocksdb_writeoptions_set_low_pri(write_opt, bool)
 end
 
 local OPT_FUN_LIST = {
