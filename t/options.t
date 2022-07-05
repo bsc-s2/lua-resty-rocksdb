@@ -54,29 +54,26 @@ location = /t {
         report_bg_io_stats=true;]], new_opts, err)
 
         if err_code ~= nil then
-            ngx.say('failed to create options: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('create options success')
+            ngx.log(ngx.ERR, 'failed to create options: ' .. err_code .. ' ' .. err_msg)
+            return
         end
 
         local db, err_code, err_msg = rocksdb.open_db(new_opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
-            ngx.say('failed to open db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('open db success')
+            ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
         end
+        assert(db ~= nil, "open db returned address is empty")
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- request
 GET /t
 
---- response_body
-create options success
-open db success
-
---- error_code: 200
+--- no_error_log
+[error]
 
 === TEST 2: test create options failed
 This test will create options failed
@@ -113,22 +110,19 @@ location = /t {
         compaction_style=kCompactionStyleFIFO;
         hard_pending_compaction_bytes_limit=0;
         compaction_filter_factory=mpudlojcujCompactionFilterFactory;
-        ]], new_opts, err)
-        if err_code ~= nil then
-            ngx.say('failed to create options: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('create options success')
-        end
+        ]], new_opts)
+
+        assert(err_code == 'GetOptionErr')
+        assert(err_msg == "Invalid argument: Can't parse option compaction_filter_factory")
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- request
 GET /t
 
---- response_body
-failed to create options: GetOptionErr Invalid argument: Can't parse option compaction_filter_factory
-
---- error_code: 200
+--- no_error_log
+[error]
 
 === TEST 3: test create options by api
 This test will open new options
@@ -171,18 +165,19 @@ location = /t {
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
-            ngx.say('failed to open db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('open db success')
+            ngx.log(ngx.ERR, 'failed to create options: ' .. err_code .. ' ' .. err_msg)
+            return
         end
+        assert(db ~= nil, "open db returned address is empty")
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- request
 GET /t
 
---- response_body
-open db success
+--- no_error_log
+[error]
 
 
 

@@ -31,24 +31,31 @@ location = /t {
         local value = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opt, true)
 
-        local db, _, _ = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
+        if err_code ~= nil then
+            ngx.log('failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        assert(db ~= nil, "open db returned address is empty")
         local data = string.rep("a", tonumber(value) * 1024)
 
         local write_opt = options.rocksdb_writeoptions_create()
         local _, err_code, err_msg = write.put(db, write_opt, string.reverse("key" .. tostring(ngx.now())), data)
         if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
+            ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
+            return
         end
+
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- pipelined_requests eval
 ["POST /t\n" . "4", "POST /t\n" . "512"]
---- response_body eval
-["put file success\n", "put file success\n"]
+--- no_error_log
+[error]
 
 === TEST 2: test put file with null db connection
 test put file with null db connection
@@ -65,22 +72,19 @@ location = /t {
         local write_opt = options.rocksdb_writeoptions_create()
         local _, err_code, err_msg = write.put(nil, write_opt, "key" .. tostring(ngx.now()), "2222")
 
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
-        end
+        assert(err_code == 'PutError')
+        assert(err_msg == 'db connect is nil')
+
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- request
 GET /t
---- response_body
-failed to put db: PutError db connect is nil
+--- no_error_log
+[error]
 
---- error_code: 200
-
-=== TEST 3: test write invalid value type
+=== TEST 3: test write invalid value and key type
 test write invalid value type
 
 --- http_config eval: $::HttpConfig
@@ -94,59 +98,36 @@ location = /t {
         options.rocksdb_options_set_create_if_missing(opt, true)
         local write_opt = options.rocksdb_writeoptions_create()
 
-        local db, _, _ = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
-
-        local _, err_code, err_msg = write.put(db, write_opt, "key" .. tostring(ngx.now()), 1)
+        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
         if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
+            ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
         end
 
-        local _, err_code, err_msg = write.put(db, write_opt, "key" .. tostring(ngx.now()), nil)
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
+        local list = { 100, nil }
+
+        for _, v in pairs(list) do
+            local _, err_code, err_msg = write.put(db, write_opt, "key" .. tostring(ngx.now()), v)
+            assert(err_code == 'PutError')
+            assert(err_msg == 'val: ' .. type(v) .. ', err: the parameter val is invalid')
         end
 
-        local _, err_code, err_msg = write.put(db, write_opt, "key" .. tostring(ngx.now()), "")
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
-        end
-
-        local _, err_code, err_msg = write.put(db, write_opt, nil, "value")
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
-        end
-
-        local _, err_code, err_msg = write.put(db, write_opt, "", "value")
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
+        for _, v in pairs(list) do
+            local _, err_code, err_msg = write.put(db, write_opt, v, "test")
+            assert(err_code == 'PutError')
+            assert(err_msg == 'key: ' .. type(v) .. ', err: the parameter key is invalid')
         end
 
         local _, err_code, err_msg = write.put(db, nil, "test", "value")
-        if err_code ~= nil then
-            ngx.say('failed to put db: ' .. err_code .. ' ' .. err_msg)
-        else
-            ngx.say('put file success')
-        end
+
+        assert(err_code == 'PutError')
+        assert(err_msg == 'write_opts is nil')
+
+        ngx.exit(ngx.HTTP_OK)
     }
 }
 
 --- request
 GET /t
---- response_body
-failed to put db: PutError val: number, err: the parameter val is invalid
-failed to put db: PutError val: nil, err: the parameter val is invalid
-put file success
-failed to put db: PutError key: nil, err: the parameter key is invalid
-put file success
-failed to put db: PutError write_opts is nil
---- error_code: 200
+--- no_error_log
+[error]
