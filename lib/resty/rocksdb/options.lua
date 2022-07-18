@@ -501,7 +501,7 @@ function _M.rocksdb_get_options_from_string(base_opt, opt_str, new_opt)
     if err[0] ~= nil then
         return nil, 'GetOptionErr', ffi.string(err[0])
     end
-    return nil, nil, nil
+    return nil
 end
 
 function _M.rocksdb_writeoptions_create()
@@ -534,6 +534,18 @@ end
 
 function _M.rocksdb_readoptions_create()
     return rocksdb.rocksdb_readoptions_create()
+end
+
+function _M.rocksdb_readoptions_set_total_order_seek(read_opt, bool)
+     return rocksdb.rocksdb_readoptions_set_total_order_seek(read_opt, bool)
+end
+
+function _M.rocksdb_readoptions_set_iterate_upper_bound(read_opt, key)
+     return rocksdb.rocksdb_readoptions_set_iterate_upper_bound(read_opt, key, #key)
+end
+
+function _M.rocksdb_readoptions_set_iterate_lower_bound(read_opt, key)
+     return rocksdb.rocksdb_readoptions_set_iterate_lower_bound(read_opt, key, #key)
 end
 
 local OPT_FUN_LIST = {

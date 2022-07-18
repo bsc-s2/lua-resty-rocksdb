@@ -71,7 +71,7 @@ function _M.multi_get(db, readoptions, keys_list, partial_success)
         end
     end
 
-    return ret, nil, nil
+    return ret
 end
 
 return _M

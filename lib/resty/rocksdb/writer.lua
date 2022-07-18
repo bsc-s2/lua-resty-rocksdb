@@ -41,7 +41,7 @@ function _M.put(db, write_opts, key, val)
         return nil, 'PutError', string.format('key: %s, err: %s', key, ffi.string(err[0]))
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 function _M.put_cf(db, write_opts, column_family, key, val)
@@ -58,7 +58,7 @@ function _M.put_cf(db, write_opts, column_family, key, val)
         return nil, 'PutError', string.format('key: %s, err: %s', key, ffi.string(err[0]))
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 return _M

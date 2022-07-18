@@ -22,7 +22,7 @@ local function check_open_db_type(type)
                 " to be opened conflicts with an existing type:" .. db_type
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 function _M.open_db(opts, db_path)
@@ -44,7 +44,7 @@ function _M.open_db(opts, db_path)
 
     db_type = db_types['normal']
 
-    return db, nil, nil
+    return db
 
 end
 
@@ -68,7 +68,7 @@ function _M.destroy_db(opt, db_name)
         return nil, 'DestroyDbError', ffi.string(err[0])
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 function _M.open_with_ttl(opts, db_path, ttl)
@@ -91,7 +91,7 @@ function _M.open_with_ttl(opts, db_path, ttl)
 
     db_type = db_types['ttl']
 
-    return db, nil, nil
+    return db
 end
 
 function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
@@ -115,7 +115,7 @@ function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
 
     db_type = db_types['read_only']
 
-    return db, nil, nil
+    return db
 end
 
 function _M.open_as_secondary(opts, db_path, secondary_path)
@@ -138,7 +138,7 @@ function _M.open_as_secondary(opts, db_path, secondary_path)
 
     db_type = db_types['secondary']
 
-    return db, nil, nil
+    return db
 end
 
 function _M.delete(write_opt, key)
@@ -161,7 +161,7 @@ function _M.delete(write_opt, key)
         return nil, 'DeleteError', ffi.string(err[0])
     end
 
-    return nil, nil, nil
+    return nil
 end
 
 return _M
