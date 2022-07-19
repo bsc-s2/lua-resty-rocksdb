@@ -120,3 +120,114 @@ GET /t
 --- no_error_log
 [error]
 
+=== TEST 4: test delete db file
+This test will delete file with api
+
+--- http_config eval: $::HttpConfig
+--- config
+location = /t {
+    rewrite_by_lua_block {
+        local rocksdb = require("rocksdb")
+        local write = require("writer")
+        local options = require("options")
+        local read = require("reader")
+
+        local opt = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opt, true)
+        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        local write_opt = options.rocksdb_writeoptions_create()
+
+        local _, err_code, err_msg = write.put(db, write_opt, "key", "data")
+
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        local readoptions = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = read.get(db, readoptions, "key")
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        assert(result == "data", 'failed to get db: data expected, got ' .. tostring(result))
+
+        local _, err_code, err_msg = rocksdb.delete(write_opt, "key")
+
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to delete file: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        local result, err_code, err_msg = read.get(db, readoptions, "key")
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        assert(result == nil, 'failed to get db: nil expected, got ' .. tostring(result))
+
+        ngx.exit(ngx.HTTP_OK)
+
+    }
+}
+
+--- request
+GET /t
+
+--- no_error_log
+[error]
+
+=== TEST 5: test delete db file with invalid key
+This test will delete file with invalid key
+
+--- http_config eval: $::HttpConfig
+--- config
+location = /t {
+    rewrite_by_lua_block {
+        local rocksdb = require("rocksdb")
+        local write = require("writer")
+        local options = require("options")
+        local read = require("reader")
+
+        local opt = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opt, true)
+        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        local write_opt = options.rocksdb_writeoptions_create()
+
+        local _, err_code, err_msg = rocksdb.delete(write_opt, 1111)
+
+        if err_code ~= nil then
+            assert(err_code == 'DeleteError')
+            assert(err_msg == 'key: number, err: the parameter key is invalid')
+        end
+
+        local _, err_code, err_msg = rocksdb.delete(nil, "key")
+        if err_code ~= nil then
+            assert(err_code == 'DeleteError')
+            assert(err_msg == 'write_opt: nil, err: the parameter write_opt is nil')
+        end
+
+        ngx.exit(ngx.HTTP_OK)
+
+    }
+}
+
+--- request
+GET /t
+
+--- no_error_log
+[error]

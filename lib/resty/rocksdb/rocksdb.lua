@@ -48,6 +48,19 @@ function _M.open_db(opts, db_path)
 
 end
 
+function _M.close_db()
+    if db == nil then
+        return nil, 'CloseDbError', "db is already closed"
+    end
+
+    rocksdb.rocksdb_close(db)
+
+    db = nil
+    db_types = nil
+
+    return
+end
+
 function _M.destroy_db(opt, db_name)
     local err = ffi.new(ctype.str_array_t, 1)
     rocksdb.rocksdb_destroy_db(opt, db_name, err)
@@ -126,6 +139,29 @@ function _M.open_as_secondary(opts, db_path, secondary_path)
     db_type = db_types['secondary']
 
     return db, nil, nil
+end
+
+function _M.delete(write_opt, key)
+
+    if type(key) ~= 'string' then
+        return nil, 'DeleteError', string.format(
+                'key: %s, err: the parameter key is invalid', type(key))
+    end
+
+    if write_opt == nil then
+        return nil, 'DeleteError', string.format(
+                'write_opt: %s, err: the parameter write_opt is nil', write_opt)
+    end
+
+    local err = ffi.new(ctype.str_array_t, 1)
+
+    rocksdb.rocksdb_delete(db, write_opt, key, #key, err)
+
+    if err[0] ~= nil then
+        return nil, 'DeleteError', ffi.string(err[0])
+    end
+
+    return nil, nil, nil
 end
 
 return _M

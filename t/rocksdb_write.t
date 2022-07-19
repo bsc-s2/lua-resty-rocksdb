@@ -26,7 +26,7 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("write")
+        local write = require("writer")
         local opt = options.rocksdb_options_create()
         local value = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -66,7 +66,7 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("write")
+        local write = require("writer")
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)
         local write_opt = options.rocksdb_writeoptions_create()
@@ -94,7 +94,7 @@ location = /t {
         local rocksdb = require("rocksdb")
         local options = require("options")
         local opt = options.rocksdb_options_create()
-        local write = require("write")
+        local write = require("writer")
         options.rocksdb_options_set_create_if_missing(opt, true)
         local write_opt = options.rocksdb_writeoptions_create()
 

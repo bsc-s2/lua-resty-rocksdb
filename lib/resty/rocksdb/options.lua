@@ -282,6 +282,14 @@ function _M.rocksdb_options_set_arena_block_size(opts, size)
     return rocksdb.rocksdb_options_set_arena_block_size(opts, ffi.new(ctype.size_t, size))
 end
 
+function _M.rocksdb_block_based_options_set_no_block_cache(opts, bool)
+    return rocksdb.rocksdb_block_based_options_set_no_block_cache(opts, bool)
+end
+
+function _M.rocksdb_block_based_options_set_block_cache(opts, size)
+    return rocksdb.rocksdb_block_based_options_set_block_cache(opts, ffi.new(ctype.size_t, size))
+end
+
 function _M.rocksdb_options_set_use_fsync(opts, size)
     return rocksdb.rocksdb_options_set_use_fsync(opts, ffi.new(ctype.size_t, size))
 end
@@ -469,6 +477,22 @@ end
 
 function _M.rocksdb_options_set_row_cache(opts, rocksdb_cache_t)
     return rocksdb.rocksdb_options_set_row_cache(opts, rocksdb_cache_t)
+end
+
+function _M.rocksdb_block_based_options_create()
+    return rocksdb.rocksdb_block_based_options_create()
+end
+
+function _M.rocksdb_block_based_options_set_block_size(opts, size)
+    return rocksdb.rocksdb_block_based_options_set_block_size(opts, ffi.new(ctype.size_t, size))
+end
+
+function _M.rocksdb_block_based_options_set_cache_index_and_filter_blocks(opt, bool)
+    return rocksdb.rocksdb_block_based_options_set_cache_index_and_filter_blocks(opt, bool)
+end
+
+function _M.rocksdb_options_set_block_based_table_factory(opts, table_options)
+    return rocksdb.rocksdb_options_set_block_based_table_factory(opts, table_options)
 end
 
 function _M.rocksdb_get_options_from_string(base_opt, opt_str, new_opt)
