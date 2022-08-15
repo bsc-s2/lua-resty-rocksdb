@@ -1726,6 +1726,8 @@ rocksdb_approximate_memory_usage_get_mem_table_readers_total(
  uint64_t
 rocksdb_approximate_memory_usage_get_cache_total(
     rocksdb_memory_usage_t* memory_usage);
+
+ void free(void *ptr);
 ]]
 }
 

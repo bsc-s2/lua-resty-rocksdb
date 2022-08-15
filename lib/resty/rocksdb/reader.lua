@@ -20,14 +20,17 @@ function _M.get(db, readoptions, key)
     local err = ffi.new(ctype.str_array_t, 1)
     local vallen = ffi.new(ctype.size_array_t, 1)
 
-    local value = rocksdb.rocksdb_get(db, readoptions, key, #key, vallen, err)
+    local buf = rocksdb.rocksdb_get(db, readoptions, key, #key, vallen, err)
 
     if err[0] ~= nil then
-        return nil, 'GetError', string.format(
-                'key: %s, err: %s', key, ffi.string(err[0]))
+        local err_msg =string.format('key: %s, err: %s', key, ffi.string(err[0]))
+        base.mem_free(err[0])
+        return nil, 'GetError', err_msg
     end
 
-    return base.convert_cdata_str_to_string(value, vallen[0])
+    local value = base.convert_cdata_str_to_string(buf, vallen[0])
+    base.mem_free(buf)
+    return value
 end
 
 function _M.multi_get(db, readoptions, keys_list, partial_success)
@@ -62,12 +65,14 @@ function _M.multi_get(db, readoptions, keys_list, partial_success)
 
         if err[i] ~= nil then
             local err_msg = string.format('key: %s, err: %s', k, ffi.string(err[i]))
+            base.mem_free(err[i])
             ngx.log(ngx.WARN, err_msg)
             if not partial_success then
                 return nil, 'MultiGetError', err_msg
             end
         else
             ret[k] = base.convert_cdata_str_to_string(cdata_values_list[i], cdata_values_list_sizes[i])
+            base.mem_free(cdata_values_list[i])
         end
     end
 
