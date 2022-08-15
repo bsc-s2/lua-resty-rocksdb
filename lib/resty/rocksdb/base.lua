@@ -15,4 +15,8 @@ function _M.convert_cdata_str_to_string(cdata_str, cdata_size)
 
 end
 
+function _M.free(cdata)
+    ffi.C.free(cdata)
+end
+
 return _M
