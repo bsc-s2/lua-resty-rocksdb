@@ -22,11 +22,11 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
+        local writer = require("writer")
         local iterator = require("iterator")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -41,8 +41,8 @@ location = /t {
         end
 
         for _, k in ipairs(keys_list) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, 'bar')
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, 'bar')
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -50,8 +50,8 @@ location = /t {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local iter = iterator.new(db, readoptions)
+        local read_opts = options.rocksdb_readoptions_create()
+        local iter = iterator.new(db, read_opts)
         local result = {}
         iter:seek_to_first()
 
@@ -94,11 +94,11 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
+        local writer = require("writer")
         local iterator = require("iterator")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -113,8 +113,8 @@ location = /t {
         end
 
         for _, k in ipairs(keys_list) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, 'bar')
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, 'bar')
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -122,8 +122,8 @@ location = /t {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local iter = iterator.new(db, readoptions)
+        local read_opts = options.rocksdb_readoptions_create()
+        local iter = iterator.new(db, read_opts)
         local result = {}
         iter:seek_to_last()
 
@@ -167,11 +167,11 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
+        local writer = require("writer")
         local iterator = require("iterator")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -181,8 +181,8 @@ location = /t {
         local keys_list = { 'foo1', 'too5', 'too1', 'foo9', 'too3', 'foo10', 'woo1' }
 
         for _, k in ipairs(keys_list) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, 'bar')
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, 'bar')
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -190,8 +190,8 @@ location = /t {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local iter = iterator.new(db, readoptions)
+        local read_opts = options.rocksdb_readoptions_create()
+        local iter = iterator.new(db, read_opts)
         local result = {}
         local expected = { 'too1', 'too3', 'too5', 'woo1' }
         iter:seek('too')
@@ -233,11 +233,11 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
+        local writer = require("writer")
         local iterator = require("iterator")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -252,8 +252,8 @@ location = /t {
         end
 
         for _, k in ipairs(keys_list) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, 'bar')
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, 'bar')
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -261,11 +261,11 @@ location = /t {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        options.rocksdb_readoptions_set_iterate_lower_bound(readoptions, 'foo4')
-        options.rocksdb_readoptions_set_iterate_upper_bound(readoptions, 'foo8')
+        local read_opts = options.rocksdb_readoptions_create()
+        options.rocksdb_readoptions_set_iterate_lower_bound(read_opts, 'foo4')
+        options.rocksdb_readoptions_set_iterate_upper_bound(read_opts, 'foo8')
 
-        local iter = iterator.new(db, readoptions)
+        local iter = iterator.new(db, read_opts)
         local result = {}
         local expected = { 'foo4', 'foo5', 'foo6',  'foo7' }
         iter:seek('foo')
@@ -307,11 +307,11 @@ location = /t {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
+        local writer = require("writer")
         local iterator = require("iterator")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -326,8 +326,8 @@ location = /t {
         end
 
         for _, k in ipairs(keys_list) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, 'bar')
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, 'bar')
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -335,11 +335,11 @@ location = /t {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        options.rocksdb_readoptions_set_iterate_lower_bound(readoptions, 'foo8')
-        options.rocksdb_readoptions_set_iterate_upper_bound(readoptions, 'foo4')
+        local read_opts = options.rocksdb_readoptions_create()
+        options.rocksdb_readoptions_set_iterate_lower_bound(read_opts, 'foo8')
+        options.rocksdb_readoptions_set_iterate_upper_bound(read_opts, 'foo4')
 
-        local iter = iterator.new(db, readoptions)
+        local iter = iterator.new(db, read_opts)
         local result = {}
         iter:seek('foo')
 
@@ -367,4 +367,3 @@ GET /t
 
 --- no_error_log
 [error]
-

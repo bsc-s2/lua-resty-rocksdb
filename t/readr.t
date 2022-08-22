@@ -21,28 +21,28 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local writeoptions = options.rocksdb_writeoptions_create()
+        local write_opts = options.rocksdb_writeoptions_create()
         local key, value = 'foo', 'bar'
-        local _, err_code, err_msg = write.put(db, writeoptions, key, value)
+        local _, err_code, err_msg = writer.put(db, write_opts, key, value)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.get(db, readoptions, key)
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.get(db, read_opts, key)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -69,18 +69,18 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.get(db, readoptions, 'not_exist')
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.get(db, read_opts, 'not_exist')
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -107,21 +107,21 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
+        local read_opts = options.rocksdb_readoptions_create()
         local tab = { 100, nil, true, 0, { false }, { foo = 'bar' }, { a = 1 } }
 
         for i = 1, #tab do
-            local result, err_code, err_msg = read.get(db, readoptions, tab[i])
+            local result, err_code, err_msg = reader.get(db, read_opts, tab[i])
             assert(result == nil, 'failed to get db: nil expected, got ' .. tostring(result))
             assert(err_code == 'GetError', "failed to get db: err_code should be GetError, got " .. tostring(err_code))
         end
@@ -144,19 +144,19 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local writeoptions = options.rocksdb_writeoptions_create()
-        local readoptions = options.rocksdb_readoptions_create()
+        local write_opts = options.rocksdb_writeoptions_create()
+        local read_opts = options.rocksdb_readoptions_create()
 
         local key, value = '', ''
         for i = 0, 255 do
@@ -164,14 +164,14 @@ location = /read {
             value = value .. string.char(i)
         end
 
-        local _, err_code, err_msg = write.put(db, writeoptions, key, value)
+        local _, err_code, err_msg = writer.put(db, write_opts, key, value)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local result, err_code, err_msg = read.get(db, readoptions, key)
+        local result, err_code, err_msg = reader.get(db, read_opts, key)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -199,12 +199,12 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
         local vallen = ngx.req.get_body_data()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -213,16 +213,16 @@ location = /read {
 
         local key = string.reverse("key" .. tostring(ngx.now()))
         local value = string.rep("a", tonumber(vallen) * 1024)
-        local writeoptions = options.rocksdb_writeoptions_create()
-        local _, err_code, err_msg = write.put(db, writeoptions, key, value)
+        local write_opts = options.rocksdb_writeoptions_create()
+        local _, err_code, err_msg = writer.put(db, write_opts, key, value)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.get(db, readoptions, key)
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.get(db, read_opts, key)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -248,11 +248,11 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -263,8 +263,8 @@ location = /read {
         local keys_list = {}
 
         for k, v in pairs(tab) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, v)
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, v)
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -273,8 +273,8 @@ location = /read {
             table.insert(keys_list, k)
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.multi_get(db, readoptions, keys_list)
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.multi_get(db, read_opts, keys_list)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -305,11 +305,11 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
@@ -319,8 +319,8 @@ location = /read {
         local tab = { foo = 'bar', key = 'value' }
 
         for k, v in pairs(tab) do
-            local writeoptions = options.rocksdb_writeoptions_create()
-            local _, err_code, err_msg = write.put(db, writeoptions, k, v)
+            local write_opts = options.rocksdb_writeoptions_create()
+            local _, err_code, err_msg = writer.put(db, write_opts, k, v)
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -328,8 +328,8 @@ location = /read {
             end
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.multi_get(db, readoptions, { 'foo', nil, 'key' })
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.multi_get(db, read_opts, { 'foo', nil, 'key' })
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)
@@ -357,28 +357,28 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
-        local opt = options.rocksdb_options_create()
-        options.rocksdb_options_set_create_if_missing(opt, true)
-        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+        local writer = require("writer")
+        local reader = require("reader")
+        local opts = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opts, true)
+        local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local writeoptions = options.rocksdb_writeoptions_create()
-        local _, err_code, err_msg = write.put(db, writeoptions, 'foo', 'bar')
+        local write_opts = options.rocksdb_writeoptions_create()
+        local _, err_code, err_msg = writer.put(db, write_opts, 'foo', 'bar')
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
             return
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
+        local read_opts = options.rocksdb_readoptions_create()
         local keys_list = { 100, nil, 'foo', true, '', { 0 }, foo = 'bar', 'key' }
-        local result, err_code, err_msg = read.multi_get(db, readoptions, keys_list)
+        local result, err_code, err_msg = reader.multi_get(db, read_opts, keys_list)
 
         assert(result == nil, 'failed to get db: nil expected, got ' .. tostring(result))
         assert(err_code == 'MultiGetError', "failed to get db: err_code should be MultiGetError, got " .. tostring(err_code))
@@ -402,8 +402,8 @@ location = /read {
     rewrite_by_lua_block {
         local rocksdb = require("rocksdb")
         local options = require("options")
-        local write = require("writer")
-        local read = require("reader")
+        local writer = require("writer")
+        local reader = require("reader")
         local opt = options.rocksdb_options_create()
         local vallen = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -415,12 +415,12 @@ location = /read {
         end
 
         local value = string.rep("a", tonumber(vallen) * 1024)
-        local writeoptions = options.rocksdb_writeoptions_create()
+        local write_opts = options.rocksdb_writeoptions_create()
         local keys_list = {}
 
         for i = 1, 100 do
             local key = string.reverse("key" .. i .. tostring(ngx.now()))
-            local _, err_code, err_msg = write.put(db, writeoptions, key, value)
+            local _, err_code, err_msg = writer.put(db, write_opts, key, value)
 
             if err_code ~= nil then
                 ngx.log(ngx.ERR, 'failed to put db: ' .. err_code .. ' ' .. err_msg)
@@ -430,8 +430,8 @@ location = /read {
             keys_list[i] = key
         end
 
-        local readoptions = options.rocksdb_readoptions_create()
-        local result, err_code, err_msg = read.multi_get(db, readoptions, keys_list)
+        local read_opts = options.rocksdb_readoptions_create()
+        local result, err_code, err_msg = reader.multi_get(db, read_opts, keys_list)
 
         if err_code ~= nil then
             ngx.log(ngx.ERR, 'failed to get db: ' .. err_code .. ' ' .. err_msg)

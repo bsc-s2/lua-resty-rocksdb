@@ -2,10 +2,13 @@ local ffi = require('ffi')
 local rocksdb = ffi.load('rocksdb')
 
 local include_rocksdb = require('include_cdef')
+local base = require('base')
 local ctype = require('ctype')
 
+local _M = {
+    version = base.version
+}
 
-local _M = { _VERSION = '0.1.0'}
 
 local function check_put_args(db, write_opts, key, val)
     if db == nil then
@@ -27,6 +30,7 @@ local function check_put_args(db, write_opts, key, val)
     end
 end
 
+
 function _M.put(db, write_opts, key, val)
     local _, err_code, err_msg = check_put_args(db, write_opts, key, val)
     if err_code ~= nil then
@@ -44,6 +48,7 @@ function _M.put(db, write_opts, key, val)
     return nil
 end
 
+
 function _M.put_cf(db, write_opts, column_family, key, val)
     local _, err_code, err_msg = check_put_args(db, write_opts, key, val)
     if err_code ~= nil then
@@ -60,5 +65,6 @@ function _M.put_cf(db, write_opts, column_family, key, val)
 
     return nil
 end
+
 
 return _M

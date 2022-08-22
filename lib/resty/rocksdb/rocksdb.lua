@@ -3,8 +3,12 @@ local rocksdb = ffi.load('rocksdb')
 
 local include_rocksdb = require('include_cdef')
 local ctype = require('ctype')
+local base = require('base')
 
-local _M = { _VERSION = '1.0' }
+local _M = {
+    version = base.version
+}
+
 
 local db_types = {
     ['normal'] = "NORMAL",
@@ -13,8 +17,10 @@ local db_types = {
     ['secondary'] = "SECONDARY",
 }
 
+
 local db = nil
 local db_type = nil
+
 
 local function check_open_db_type(type)
     if db_type ~= nil and db_type ~= type then
@@ -24,6 +30,7 @@ local function check_open_db_type(type)
 
     return nil
 end
+
 
 function _M.open_db(opts, db_path)
     local _, err_code, err_msg = check_open_db_type(db_types['normal'])
@@ -48,6 +55,7 @@ function _M.open_db(opts, db_path)
 
 end
 
+
 function _M.close_db()
     if db == nil then
         return nil, 'CloseDbError', "db is already closed"
@@ -61,15 +69,17 @@ function _M.close_db()
     return
 end
 
-function _M.destroy_db(opt, db_name)
+
+function _M.destroy_db(opts, db_name)
     local err = ffi.new(ctype.str_array_t, 1)
-    rocksdb.rocksdb_destroy_db(opt, db_name, err)
+    rocksdb.rocksdb_destroy_db(opts, db_name, err)
     if err[0] ~= nil then
         return nil, 'DestroyDbError', ffi.string(err[0])
     end
 
     return nil
 end
+
 
 function _M.open_with_ttl(opts, db_path, ttl)
     local _, err_code, err_msg = check_open_db_type(db_types['ttl'])
@@ -93,6 +103,7 @@ function _M.open_with_ttl(opts, db_path, ttl)
 
     return db
 end
+
 
 function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
     local _, err_code, err_msg = check_open_db_type(db_types['read_only'])
@@ -118,6 +129,7 @@ function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
     return db
 end
 
+
 function _M.open_as_secondary(opts, db_path, secondary_path)
     local _, err_code, err_msg = check_open_db_type(db_types['secondary'])
     if err_code ~= nil then
@@ -141,21 +153,22 @@ function _M.open_as_secondary(opts, db_path, secondary_path)
     return db
 end
 
-function _M.delete(write_opt, key)
+
+function _M.delete(write_opts, key)
 
     if type(key) ~= 'string' then
         return nil, 'DeleteError', string.format(
                 'key: %s, err: the parameter key is invalid', type(key))
     end
 
-    if write_opt == nil then
+    if write_opts == nil then
         return nil, 'DeleteError', string.format(
-                'write_opt: %s, err: the parameter write_opt is nil', write_opt)
+                'write_opt: %s, err: the parameter write_opt is nil', write_opts)
     end
 
     local err = ffi.new(ctype.str_array_t, 1)
 
-    rocksdb.rocksdb_delete(db, write_opt, key, #key, err)
+    rocksdb.rocksdb_delete(db, write_opts, key, #key, err)
 
     if err[0] ~= nil then
         return nil, 'DeleteError', ffi.string(err[0])
@@ -163,5 +176,6 @@ function _M.delete(write_opt, key)
 
     return nil
 end
+
 
 return _M

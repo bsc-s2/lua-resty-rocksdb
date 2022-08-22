@@ -1,8 +1,9 @@
 local ffi = require "ffi"
 
 local _M = {
-    _VERSION = '1.0'
+    version = '1.0'
 }
+
 
 function _M.convert_cdata_str_to_string(cdata_str, cdata_size)
     cdata_size = tonumber(cdata_size)
@@ -15,8 +16,10 @@ function _M.convert_cdata_str_to_string(cdata_str, cdata_size)
 
 end
 
+
 function _M.free(cdata)
     ffi.C.free(cdata)
 end
+
 
 return _M
