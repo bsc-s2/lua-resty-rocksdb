@@ -603,6 +603,31 @@ function _M.rocksdb_block_based_options_create()
 end
 
 
+function _M.rocksdb_block_based_options_destroy(rocksdb_block_based_table_options_t)
+    return rocksdb.rocksdb_block_based_options_destroy(rocksdb_block_based_table_options_t)
+end
+
+
+function _M.rocksdb_block_based_options_set_no_block_cache(opts, bool)
+    return rocksdb.rocksdb_block_based_options_set_no_block_cache(opts, bool)
+end
+
+
+function _M.rocksdb_options_set_db_write_buffer_size(opts, size)
+    return rocksdb.rocksdb_options_set_db_write_buffer_size(opts, ffi.new(ctype.size_t, size))
+end
+
+
+function _M.rocksdb_block_based_options_set_block_cache(opts, block_cache)
+    return rocksdb.rocksdb_block_based_options_set_block_cache(opts, block_cache)
+end
+
+
+function _M.rocksdb_block_based_options_set_cache_index_and_filter_blocks_with_high_priority(opts, bool)
+    return rocksdb.rocksdb_block_based_options_set_cache_index_and_filter_blocks_with_high_priority(opts, bool)
+end
+
+
 function _M.rocksdb_block_based_options_set_block_size(opts, size)
     return rocksdb.rocksdb_block_based_options_set_block_size(opts, ffi.new(ctype.size_t, size))
 end
@@ -685,6 +710,26 @@ end
 
 function _M.rocksdb_readoptions_set_iterate_lower_bound(read_opts, key)
      return rocksdb.rocksdb_readoptions_set_iterate_lower_bound(read_opts, key, #key)
+end
+
+
+function _M.rocksdb_readoptions_destroy(read_opts)
+    return rocksdb.rocksdb_readoptions_destroy(read_opts)
+end
+
+
+function _M.rocksdb_readoptions_set_fill_cache(read_opts, bool)
+    return rocksdb.rocksdb_readoptions_set_fill_cache(read_opts, bool)
+end
+
+
+function _M.rocksdb_cache_create_lru(capacity)
+    return rocksdb.rocksdb_cache_create_lru(capacity)
+end
+
+
+function _M.rocksdb_cache_destroy(rocksdb_cache_t)
+    return rocksdb.rocksdb_cache_destroy(rocksdb_cache_t)
 end
 
 

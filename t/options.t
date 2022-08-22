@@ -75,56 +75,7 @@ GET /t
 --- no_error_log
 [error]
 
-=== TEST 2: test create options failed
-This test will create options failed
-
---- http_config eval: $::HttpConfig
---- config
-location = /t {
-    rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local opts = options.rocksdb_options_create()
-        local new_opts = options.rocksdb_options_create()
-
-        local _, err_code, err_msg = options.rocksdb_get_options_from_string(
-        opts,
-        [[create_if_missing=true;
-        max_successive_merges=5497;
-        max_sequential_skip_in_iterations=4294971408;
-        arena_block_size=1893;
-        target_file_size_multiplier=35;
-        min_write_buffer_number_to_merge=9;
-        max_write_buffer_number=84;
-        write_buffer_size=1653;
-        max_compaction_bytes=64;
-        max_bytes_for_level_multiplier=60;
-        compression=kNoCompression;
-        bottommost_compression=kDisableCompressionOption;
-        min_partial_merge_operands=7576;
-        level0_stop_writes_trigger=33;
-        table_factory=PlainTable;
-        memtable_factory=SkipListFactory;
-        compression=kNoCompression;
-        bottommost_compression=kDisableCompressionOption;
-        compaction_style=kCompactionStyleFIFO;
-        hard_pending_compaction_bytes_limit=0;
-        compaction_filter_factory=mpudlojcujCompactionFilterFactory;
-        ]], new_opts)
-
-        assert(err_code == 'GetOptionErr')
-        assert(err_msg == "Invalid argument: Can't parse option compaction_filter_factory")
-        ngx.exit(ngx.HTTP_OK)
-    }
-}
-
---- request
-GET /t
-
---- no_error_log
-[error]
-
-=== TEST 3: test create options by api
+=== TEST 2: test create options by api
 This test will open new options
 
 --- http_config eval: $::HttpConfig
