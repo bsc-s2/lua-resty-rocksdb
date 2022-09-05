@@ -4,7 +4,7 @@ use Cwd qw(cwd);
 my $pwd = cwd();
 
 our $HttpConfig = qq{
-    lua_package_path "$pwd/?.lua;$pwd/lib/resty/rocksdb/?.lua;;";
+    lua_package_path "$pwd/?.lua;$pwd/lib/?.lua;;";
     lua_package_cpath "$pwd/?.so;$pwd/lib/resty/rocksdb/?.so;;";
 };
 master_on();
@@ -19,10 +19,10 @@ __DATA__
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -67,9 +67,9 @@ GET /read
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -105,9 +105,9 @@ GET /read
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -142,10 +142,10 @@ GET /read
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -197,10 +197,10 @@ GET /read
 lua_need_request_body on;
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         local vallen = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opts, true)
@@ -246,10 +246,10 @@ location = /read {
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -303,10 +303,10 @@ GET /read
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -355,10 +355,10 @@ GET /read
 --- config
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -400,10 +400,10 @@ GET /read
 lua_need_request_body on;
 location = /read {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local reader = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local reader = require("resty.rocksdb.reader")
         local opt = options.rocksdb_options_create()
         local vallen = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opt, true)

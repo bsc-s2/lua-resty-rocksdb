@@ -4,7 +4,7 @@ use Cwd qw(cwd);
 my $pwd = cwd();
 
 our $HttpConfig = qq{
-    lua_package_path "$pwd/?.lua;$pwd/lib/resty/rocksdb/?.lua;;";
+    lua_package_path "$pwd/?.lua;$pwd/lib/?.lua;;";
     lua_package_cpath "$pwd/?.so;$pwd/lib/resty/rocksdb/?.so;;";
 };
 
@@ -24,9 +24,9 @@ lua_need_request_body on;
 
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local write = require("writer")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local write = require("resty.rocksdb.writer")
         local opt = options.rocksdb_options_create()
         local value = ngx.req.get_body_data()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -64,9 +64,9 @@ test put file with null db connection
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local write = require("writer")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local write = require("resty.rocksdb.writer")
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)
         local write_opt = options.rocksdb_writeoptions_create()
@@ -91,10 +91,10 @@ test write invalid value type
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
         local opt = options.rocksdb_options_create()
-        local write = require("writer")
+        local write = require("resty.rocksdb.writer")
         options.rocksdb_options_set_create_if_missing(opt, true)
         local write_opt = options.rocksdb_writeoptions_create()
 

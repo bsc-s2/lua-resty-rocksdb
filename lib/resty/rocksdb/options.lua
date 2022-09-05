@@ -1,7 +1,7 @@
 local ffi = require('ffi')
-local ctype = require('ctype')
 local rocksdb = ffi.load('rocksdb')
-local include_rocksdb = require('include_cdef')
+local include_rocksdb = require('resty.rocksdb.include_cdef')
+local ctype = require('resty.rocksdb.ctype')
 
 local _M = {}
 

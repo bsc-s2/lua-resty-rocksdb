@@ -1,9 +1,9 @@
 local ffi = require('ffi')
 local rocksdb = ffi.load('rocksdb')
 
-local include_rocksdb = require('include_cdef')
-local base = require('base')
-local ctype = require('ctype')
+local include_rocksdb = require('resty.rocksdb.include_cdef')
+local base = require('resty.rocksdb.base')
+local ctype = require('resty.rocksdb.ctype')
 
 local _M = {
     version = base.version

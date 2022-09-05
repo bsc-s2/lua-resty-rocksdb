@@ -4,7 +4,7 @@ use Cwd qw(cwd);
 my $pwd = cwd();
 
 our $HttpConfig = qq{
-    lua_package_path "$pwd/?.lua;$pwd/lib/resty/rocksdb/?.lua;;";
+    lua_package_path "$pwd/?.lua;$pwd/lib/?.lua;;";
     lua_package_cpath "$pwd/?.so;$pwd/lib/resty/rocksdb/?.so;;";
 };
 
@@ -20,8 +20,8 @@ This test will open new db
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
 
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -52,8 +52,8 @@ This test will open new db
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
 
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, false)
@@ -78,8 +78,8 @@ This test will open new db
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
 
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -126,10 +126,10 @@ This test will delete file with api
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local write = require("writer")
-        local options = require("options")
-        local read = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local write = require("resty.rocksdb.writer")
+        local options = require("resty.rocksdb.options")
+        local read = require("resty.rocksdb.reader")
 
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)
@@ -191,10 +191,10 @@ This test will delete file with invalid key
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local write = require("writer")
-        local options = require("options")
-        local read = require("reader")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local write = require("resty.rocksdb.writer")
+        local options = require("resty.rocksdb.options")
+        local read = require("resty.rocksdb.reader")
 
         local opt = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opt, true)

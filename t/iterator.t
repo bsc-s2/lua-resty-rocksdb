@@ -4,7 +4,7 @@ use Cwd qw(cwd);
 my $pwd = cwd();
 
 our $HttpConfig = qq{
-    lua_package_path "$pwd/?.lua;$pwd/lib/resty/rocksdb/?.lua;;";
+    lua_package_path "$pwd/?.lua;$pwd/lib/?.lua;;";
     lua_package_cpath "$pwd/?.so;$pwd/lib/resty/rocksdb/?.so;;";
 };
 
@@ -20,10 +20,10 @@ __DATA__
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local iterator = require("iterator")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local iterator = require("resty.rocksdb.iterator")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -92,10 +92,10 @@ GET /t
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local iterator = require("iterator")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local iterator = require("resty.rocksdb.iterator")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -165,10 +165,10 @@ GET /t
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local iterator = require("iterator")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local iterator = require("resty.rocksdb.iterator")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -231,10 +231,10 @@ GET /t
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local iterator = require("iterator")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local iterator = require("resty.rocksdb.iterator")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
@@ -305,10 +305,10 @@ GET /t
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
-        local writer = require("writer")
-        local iterator = require("iterator")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
+        local writer = require("resty.rocksdb.writer")
+        local iterator = require("resty.rocksdb.iterator")
         local opts = options.rocksdb_options_create()
         options.rocksdb_options_set_create_if_missing(opts, true)
         local db, err_code, err_msg = rocksdb.open_db(opts, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")

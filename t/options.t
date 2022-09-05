@@ -4,7 +4,7 @@ use Cwd qw(cwd);
 my $pwd = cwd();
 
 our $HttpConfig = qq{
-    lua_package_path "$pwd/?.lua;$pwd/lib/resty/rocksdb/?.lua;;";
+    lua_package_path "$pwd/?.lua;$pwd/lib/?.lua;;";
     lua_package_cpath "$pwd/?.so;$pwd/lib/resty/rocksdb/?.so;;";
 };
 
@@ -20,8 +20,8 @@ This test will open new options
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
         local opts = options.rocksdb_options_create()
         local new_opts = options.rocksdb_options_create()
 
@@ -82,8 +82,8 @@ This test will open new options
 --- config
 location = /t {
     rewrite_by_lua_block {
-        local rocksdb = require("rocksdb")
-        local options = require("options")
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local options = require("resty.rocksdb.options")
         local opts = options.rocksdb_options_create()
 
         local opts_table = {
