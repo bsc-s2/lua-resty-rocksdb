@@ -230,3 +230,41 @@ GET /t
 
 --- no_error_log
 [error]
+
+=== TEST 6: test delete db file with not exist key
+This test will delete file with not exist key
+
+--- http_config eval: $::HttpConfig
+--- config
+location = /t {
+    rewrite_by_lua_block {
+        local rocksdb = require("resty.rocksdb.rocksdb")
+        local write = require("resty.rocksdb.writer")
+        local options = require("resty.rocksdb.options")
+        local read = require("resty.rocksdb.reader")
+
+        local opt = options.rocksdb_options_create()
+        options.rocksdb_options_set_create_if_missing(opt, true)
+        local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/rocksdb_c_simple_example")
+
+        if err_code ~= nil then
+            ngx.log(ngx.ERR, 'failed to open db: ' .. err_code .. ' ' .. err_msg)
+            return
+        end
+
+        local write_opt = options.rocksdb_writeoptions_create()
+
+        local _, err_code, err_msg = rocksdb.delete(write_opt, 'not_exist_key')
+
+        assert(err_code == nil)
+        assert(err_msg == nil)
+
+        ngx.exit(ngx.HTTP_OK)
+    }
+}
+
+--- request
+GET /t
+
+--- no_error_log
+[error]
