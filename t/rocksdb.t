@@ -60,7 +60,7 @@ location = /t {
 
         local db, err_code, err_msg = rocksdb.open_db(opt, "./t/servroot/fastcgi_temp/not_exist_dir_path")
 
-        assert(err_code == "OpenDbError")
+        assert(err_code == "NotExistDbError")
         ngx.exit(ngx.HTTP_OK)
     }
 }

@@ -4,6 +4,7 @@ local rocksdb = ffi.load('rocksdb')
 local include_rocksdb = require('resty.rocksdb.include_cdef')
 local ctype = require('resty.rocksdb.ctype')
 local base = require('resty.rocksdb.base')
+local fsutil = require('acid.fsutil')
 
 local _M = {
     version = base.version
@@ -20,6 +21,7 @@ local db_types = {
 
 local db = nil
 local db_type = nil
+local current_name = 'CURRENT'
 
 
 local function check_open_db_type(type)
@@ -29,6 +31,18 @@ local function check_open_db_type(type)
     end
 
     return nil
+end
+
+
+local function gen_db_open_err(db_path, err_msg)
+    local current_path = db_path .. '/' .. current_name
+    local err_code = 'NotExistDbError'
+
+    if fsutil.is_file(current_path) then
+        err_code = 'OpenDbError'
+    end
+
+    return nil, err_code, ffi.string(err_msg)
 end
 
 
@@ -46,13 +60,12 @@ function _M.open_db(opts, db_path)
     db = rocksdb.rocksdb_open(opts, db_path, err)
 
     if err[0] ~= nil then
-        return nil, 'OpenDbError', ffi.string(err[0])
+        return gen_db_open_err(db_path, err[0])
     end
 
     db_type = db_types['normal']
 
     return db
-
 end
 
 
@@ -96,7 +109,7 @@ function _M.open_with_ttl(opts, db_path, ttl)
     db = rocksdb.rocksdb_open_with_ttl(opts, db_path, ffi.new(ctype.int_t, ttl), err)
 
     if err[0] ~= nil then
-        return nil, 'OpenDbError', ffi.string(err[0])
+        return gen_db_open_err(db_path, err[0])
     end
 
     db_type = db_types['ttl']
@@ -121,7 +134,7 @@ function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
     db = rocksdb.rocksdb_open_for_read_only(opts, db_path, error_if_log_file_exist, err)
 
     if err[0] ~= nil then
-        return nil, 'OpenDbError', ffi.string(err[0])
+        return gen_db_open_err(db_path, err[0])
     end
 
     db_type = db_types['read_only']
@@ -145,7 +158,7 @@ function _M.open_as_secondary(opts, db_path, secondary_path)
     db = rocksdb.rocksdb_open_as_secondary(opts, db_path, secondary_path, err)
 
     if err[0] ~= nil then
-        return nil, 'OpenDbError', ffi.string(err[0])
+        return gen_db_open_err(db_path, err[0])
     end
 
     db_type = db_types['secondary']
