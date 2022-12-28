@@ -31,6 +31,9 @@ function _M.rocksdb_options_set_create_if_missing(opts, bool)
     return rocksdb.rocksdb_options_set_create_if_missing(opts, bool)
 end
 
+function _M.rocksdb_options_get_create_if_missing(opts)
+    return rocksdb.rocksdb_options_get_create_if_missing(opts)
+end
 
 function _M.rocksdb_options_optimize_for_point_lookup(opts, block_cache_size_mb)
     return rocksdb.rocksdb_options_optimize_for_point_lookup(opts, ffi.new(ctype.uint64_t, block_cache_size_mb))

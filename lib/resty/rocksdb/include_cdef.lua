@@ -730,6 +730,8 @@ rocksdb_options_set_allow_ingest_behind(rocksdb_options_t*,
     rocksdb_options_t* opt, int* level_values, size_t num_levels);
  void rocksdb_options_set_create_if_missing(
     rocksdb_options_t*, unsigned char);
+ unsigned char rocksdb_options_get_create_if_missing(
+    rocksdb_options_t*);
  void
 rocksdb_options_set_create_missing_column_families(rocksdb_options_t*,
                                                    unsigned char);

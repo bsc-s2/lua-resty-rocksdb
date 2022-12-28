@@ -4,6 +4,7 @@ local rocksdb = ffi.load('rocksdb')
 local include_rocksdb = require('resty.rocksdb.include_cdef')
 local ctype = require('resty.rocksdb.ctype')
 local base = require('resty.rocksdb.base')
+local options = require('resty.rocksdb.options')
 local fsutil = require('acid.fsutil')
 
 local _M = {
@@ -34,15 +35,14 @@ local function check_open_db_type(type)
 end
 
 
-local function gen_db_open_err(db_path, err_msg)
+local function is_open_db_not_exist(opts, db_path)
     local current_path = db_path .. '/' .. current_name
-    local err_code = 'NotExistDbError'
-
-    if fsutil.is_file(current_path) then
-        err_code = 'OpenDbError'
+    local create_if_missing = options.rocksdb_options_get_create_if_missing(opts)
+    if tonumber(create_if_missing) == 1 or fsutil.is_file(current_path) then
+        return false
     end
 
-    return nil, err_code, ffi.string(err_msg)
+    return true
 end
 
 
@@ -56,11 +56,15 @@ function _M.open_db(opts, db_path)
         return db, nil, nil
     end
 
+    if is_open_db_not_exist(opts, db_path) then
+        return nil, 'NotExistDbError', 'db does not exist (create_if_missing is false)'
+    end
+
     local err = ffi.new(ctype.str_array_t, 1)
     db = rocksdb.rocksdb_open(opts, db_path, err)
 
     if err[0] ~= nil then
-        return gen_db_open_err(db_path, err[0])
+        return nil, 'OpenDbError', ffi.string(err[0])
     end
 
     db_type = db_types['normal']
@@ -104,12 +108,16 @@ function _M.open_with_ttl(opts, db_path, ttl)
         return db, nil, nil
     end
 
+    if is_open_db_not_exist(opts, db_path) then
+        return nil, 'NotExistDbError', 'db does not exist (create_if_missing is false)'
+    end
+
     local err = ffi.new(ctype.str_array_t, 1)
 
     db = rocksdb.rocksdb_open_with_ttl(opts, db_path, ffi.new(ctype.int_t, ttl), err)
 
     if err[0] ~= nil then
-        return gen_db_open_err(db_path, err[0])
+        return nil, 'OpenDbError', ffi.string(err[0])
     end
 
     db_type = db_types['ttl']
@@ -128,13 +136,16 @@ function _M.open_for_read_only(opts, db_path, error_if_log_file_exist)
         return db, nil, nil
     end
 
+    if is_open_db_not_exist(opts, db_path) then
+        return nil, 'NotExistDbError', 'db does not exist (create_if_missing is false)'
+    end
 
     local err = ffi.new(ctype.str_array_t, 1)
 
     db = rocksdb.rocksdb_open_for_read_only(opts, db_path, error_if_log_file_exist, err)
 
     if err[0] ~= nil then
-        return gen_db_open_err(db_path, err[0])
+        return nil, 'OpenDbError', ffi.string(err[0])
     end
 
     db_type = db_types['read_only']
@@ -153,12 +164,16 @@ function _M.open_as_secondary(opts, db_path, secondary_path)
         return db, nil, nil
     end
 
+    if is_open_db_not_exist(opts, db_path) then
+        return nil, 'NotExistDbError', 'db does not exist (create_if_missing is false)'
+    end
+
     local err = ffi.new(ctype.str_array_t, 1)
 
     db = rocksdb.rocksdb_open_as_secondary(opts, db_path, secondary_path, err)
 
     if err[0] ~= nil then
-        return gen_db_open_err(db_path, err[0])
+        return nil, 'OpenDbError', ffi.string(err[0])
     end
 
     db_type = db_types['secondary']
