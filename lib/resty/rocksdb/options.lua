@@ -652,7 +652,7 @@ function _M.rocksdb_get_options_from_string(base_opt, opt_str, new_opt)
     if err[0] ~= nil then
         return nil, 'GetOptionErr', ffi.string(err[0])
     end
-    return nil
+    return new_opt
 end
 
 
